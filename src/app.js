@@ -17,6 +17,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Horoscope Astrology Engine is running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Horoscope Astrology Engine is running on port ${PORT}`);
+// });
+
+module.exports = { app };
