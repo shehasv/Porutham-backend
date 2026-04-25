@@ -1,6 +1,7 @@
 const { z } = require('zod');
 const { getAstroDetails } = require('../services/astrology.service');
 const { calculatePorutham } = require('../services/porutham.service');
+const { trackMatchEvent, logRawRequest } = require('../utils/telemetry');
 
 const personSchema = z.object({
   name: z.string(),
@@ -27,7 +28,7 @@ async function matchHoroscope(req, res, next) {
 
     const matchAnalysis = calculatePorutham(groomAstro, brideAstro); // Notice: Many rules compute boy relative to girl, or vice versa, our porutham logic assumes boy first.
 
-    res.json({
+    const responsePayload = {
       bride: {
         name: bride.name,
         nakshatra: brideAstro.nakshatra,
@@ -41,6 +42,14 @@ async function matchHoroscope(req, res, next) {
         pada: groomAstro.pada
       },
       ...matchAnalysis
+    };
+
+    res.json(responsePayload);
+
+    // Fire and forget telemetry logging asynchronously
+    setImmediate(() => {
+      trackMatchEvent(req, matchAnalysis);
+      logRawRequest(req, responsePayload);
     });
 
   } catch (error) {
