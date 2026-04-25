@@ -48,4 +48,39 @@ const VEDHA = {
   'Makayiram': 'Chithira'
 };
 
-module.exports = { NAKSHATRAS, RASIS, GANAS, RAJJUS, YONIS, VEDHA };
+const RASI_LORDS = {
+  'Medam': 'Mars', 'Vrischikam': 'Mars',
+  'Edavam': 'Venus', 'Thulam': 'Venus',
+  'Midhunam': 'Mercury', 'Kanni': 'Mercury',
+  'Karkidakam': 'Moon',
+  'Chingam': 'Sun',
+  'Dhanu': 'Jupiter', 'Meenam': 'Jupiter',
+  'Makaram': 'Saturn', 'Kumbham': 'Saturn'
+};
+
+const PLANETARY_FRIENDSHIP = {
+  'Sun': { friends: ['Moon', 'Mars', 'Jupiter'], neutral: ['Mercury'], enemies: ['Venus', 'Saturn'] },
+  'Moon': { friends: ['Sun', 'Mercury'], neutral: ['Mars', 'Jupiter', 'Venus', 'Saturn'], enemies: [] },
+  'Mars': { friends: ['Sun', 'Moon', 'Jupiter'], neutral: ['Venus', 'Saturn'], enemies: ['Mercury'] },
+  'Mercury': { friends: ['Sun', 'Venus'], neutral: ['Mars', 'Jupiter', 'Saturn'], enemies: ['Moon'] },
+  'Jupiter': { friends: ['Sun', 'Moon', 'Mars'], neutral: ['Saturn'], enemies: ['Mercury', 'Venus'] },
+  'Venus': { friends: ['Mercury', 'Saturn'], neutral: ['Mars', 'Jupiter'], enemies: ['Sun', 'Moon'] },
+  'Saturn': { friends: ['Mercury', 'Venus'], neutral: ['Jupiter'], enemies: ['Sun', 'Moon', 'Mars'] }
+};
+
+const VASYA_RASI_PAIRS = {
+  'Medam': ['Chingam', 'Vrischikam'],
+  'Edavam': ['Karkidakam', 'Thulam'],
+  'Midhunam': ['Kanni'],
+  'Karkidakam': ['Vrischikam', 'Dhanu'],
+  'Chingam': ['Thulam'],
+  'Kanni': ['Midhunam', 'Meenam'],
+  'Thulam': ['Makaram'],
+  'Vrischikam': ['Karkidakam', 'Kanni'],
+  'Dhanu': ['Meenam'],
+  'Makaram': ['Medam', 'Kumbham'],
+  'Kumbham': ['Medam'],
+  'Meenam': ['Makaram']
+};
+
+module.exports = { NAKSHATRAS, RASIS, GANAS, RAJJUS, YONIS, VEDHA, RASI_LORDS, PLANETARY_FRIENDSHIP, VASYA_RASI_PAIRS };

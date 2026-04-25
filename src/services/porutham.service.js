@@ -1,11 +1,11 @@
-const { NAKSHATRAS, RASIS, GANAS, RAJJUS, YONIS, VEDHA } = require('../utils/constants');
+const { NAKSHATRAS, RASIS, GANAS, RAJJUS, YONIS, VEDHA, RASI_LORDS, PLANETARY_FRIENDSHIP, VASYA_RASI_PAIRS } = require('../utils/constants');
 
 const poruthamRules = {
   // 1. Dina Porutham
   dina: (boy, girl) => {
-    const distance = (girl.nakshatraIndex - boy.nakshatraIndex + 27) % 27;
-    const goodDistances = [2, 4, 6, 8, 9, 11, 13, 15, 18, 20, 22, 24, 26];
-    return goodDistances.includes(distance);
+    const count = (boy.nakshatraIndex - girl.nakshatraIndex + 27) % 27 + 1;
+    const remainder = count % 9;
+    return [0, 2, 4, 6, 8].includes(remainder);
   },
 
   // 2. Gana Porutham
@@ -14,6 +14,7 @@ const poruthamRules = {
     const girlGana = GANAS[girl.nakshatra];
     if (boyGana === girlGana) return true;
     if (boyGana === 'Deva' && girlGana === 'Manushya') return true;
+    if (boyGana === 'Manushya' && girlGana === 'Deva') return true;
     // Asura generally bad with others
     return false;
   },
@@ -37,17 +38,28 @@ const poruthamRules = {
 
   // 4. Rasi Porutham
   rasi: (boy, girl) => {
-    // Basic: Boy should ideally be more than 6 signs away from girl, or in specific friendly signs.
-    const distance = (boy.rasiIndex - girl.rasiIndex + 12) % 12;
-    if (distance === 6) return false; // 7th sign is sometimes good, sometimes bad.
-    if (distance === 1) return false; // 2nd sign (Dwitiya) bad
-    return true; // Simplified
+    // Count from girl's rasi to boy's rasi
+    const count = (boy.rasiIndex - girl.rasiIndex + 12) % 12 + 1;
+    // 2, 6, 8, 12 are generally considered inauspicious
+    if ([2, 6, 8, 12].includes(count)) return false;
+    return true;
   },
 
   // 5. Rasyadhipa
   rasyadhipa: (boy, girl) => {
-    // Need mapping of Rasi Lords.
-    return true; // Simplified placeholder
+    const boyLord = RASI_LORDS[boy.rasi];
+    const girlLord = RASI_LORDS[girl.rasi];
+    if (boyLord === girlLord) return true;
+    
+    const boyLordFriendship = PLANETARY_FRIENDSHIP[boyLord];
+    const girlLordFriendship = PLANETARY_FRIENDSHIP[girlLord];
+    
+    // Check if they are mutual enemies, or one is enemy
+    if (boyLordFriendship.enemies.includes(girlLord) || girlLordFriendship.enemies.includes(boyLord)) {
+      return false;
+    }
+    
+    return true; // Friends or neutral
   },
 
   // 6. Mahendra
@@ -64,8 +76,10 @@ const poruthamRules = {
 
   // 8. Vasya
   vasya: (boy, girl) => {
-    // specific sign compatibilities.
-    return true; // Simplified placeholder
+    const boyVasyaRasis = VASYA_RASI_PAIRS[boy.rasi] || [];
+    const girlVasyaRasis = VASYA_RASI_PAIRS[girl.rasi] || [];
+    // Compatible if either is vasya to the other
+    return boyVasyaRasis.includes(girl.rasi) || girlVasyaRasis.includes(boy.rasi);
   },
 
   // 9. Rajju
