@@ -18,7 +18,7 @@ const axiom = new Axiom({
  * @param {Object} req - The Express request object
  * @param {Object} matchResult - The resulting porutham score object
  */
-const trackMatchEvent = (req, matchResult) => {
+const trackMatchEvent = async (req, matchResult) => {
   try {
     if (!process.env.POSTHOG_API_KEY) return;
 
@@ -33,6 +33,7 @@ const trackMatchEvent = (req, matchResult) => {
         is_recommended: matchResult.totalScore >= 18,
       }
     });
+    await posthog.flush();
   } catch (error) {
     console.error("PostHog Analytics Error:", error.message);
   }
@@ -43,7 +44,7 @@ const trackMatchEvent = (req, matchResult) => {
  * @param {Object} req - The Express request object
  * @param {Object} matchResult - The resulting porutham score object
  */
-const logRawRequest = (req, matchResult) => {
+const logRawRequest = async (req, matchResult) => {
   try {
     if (!process.env.AXIOM_TOKEN) return;
 
@@ -58,6 +59,8 @@ const logRawRequest = (req, matchResult) => {
       rawOutput: matchResult,
       timestamp: new Date().toISOString()
     }]);
+    
+    await axiom.flush();
   } catch (error) {
     console.error("Axiom Logging Error:", error.message);
   }

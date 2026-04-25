@@ -44,13 +44,13 @@ async function matchHoroscope(req, res, next) {
       ...matchAnalysis
     };
 
-    res.json(responsePayload);
+    // Send telemetry BEFORE returning response so serverless functions don't kill it
+    await Promise.all([
+      trackMatchEvent(req, matchAnalysis),
+      logRawRequest(req, responsePayload)
+    ]);
 
-    // Fire and forget telemetry logging asynchronously
-    setImmediate(() => {
-      trackMatchEvent(req, matchAnalysis);
-      logRawRequest(req, responsePayload);
-    });
+    res.json(responsePayload);
 
   } catch (error) {
     if (error instanceof z.ZodError) {
